@@ -297,6 +297,7 @@ function LoginScreen({ adminAccount, officerAccounts, onLogin }) {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function submitLogin(event) {
     event.preventDefault();
@@ -362,7 +363,34 @@ function LoginScreen({ adminAccount, officerAccounts, onLogin }) {
         <h1>BUSINESS EDUCATION DEPARTMENT ATTENDANCE TRACKER</h1>
         <form className="login-form" onSubmit={submitLogin}>
           <input placeholder="Username" value={credentials.username} onChange={(event) => setCredentials({ ...credentials, username: event.target.value })} />
-          <input placeholder="Password" type="password" value={credentials.password} onChange={(event) => setCredentials({ ...credentials, password: event.target.value })} />
+          <div className="password-field">
+            <input
+              placeholder="Password"
+              type={showPassword ? 'text' : 'password'}
+              value={credentials.password}
+              onChange={(event) => setCredentials({ ...credentials, password: event.target.value })}
+            />
+            <button
+              className="password-toggle"
+              type="button"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              onClick={() => setShowPassword((current) => !current)}
+            >
+              {showPassword ? (
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-5.33 0-9.33-4.67-10.67-6.49a2.49 2.49 0 0 1 0-3.02A20.2 20.2 0 0 1 5.06 6.3" />
+                  <path d="M9.9 4.24A11.53 11.53 0 0 1 12 4c5.33 0 9.33 4.67 10.67 6.49a2.49 2.49 0 0 1 0 3.02 19.02 19.02 0 0 1-2.14 2.44" />
+                  <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88" />
+                  <path d="M3 3l18 18" />
+                </svg>
+              ) : (
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M2.06 12.35a2.17 2.17 0 0 1 0-.7C3.17 7.69 7.08 5 12 5s8.83 2.69 9.94 6.65c.07.23.07.47 0 .7C20.83 16.31 16.92 19 12 19s-8.83-2.69-9.94-6.65Z" />
+                  <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                </svg>
+              )}
+            </button>
+          </div>
           {error && <p className="login-error">{error}</p>}
           <button className="primary-button" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Logging in...' : 'Log in'}</button>
         </form>
