@@ -1,4 +1,4 @@
-const CACHE_NAME = 'business-ed-attendance-v1';
+const CACHE_NAME = 'business-ed-attendance-v2';
 const OFFLINE_URL = '/offline.html';
 const ASSETS = ['/', OFFLINE_URL, '/manifest.json'];
 
@@ -21,6 +21,19 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.mode === 'navigate') {
     event.respondWith(fetch(event.request).catch(() => caches.match(OFFLINE_URL)));
+    return;
+  }
+
+  if (event.request.destination === 'script' || event.request.destination === 'style') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
     return;
   }
 
