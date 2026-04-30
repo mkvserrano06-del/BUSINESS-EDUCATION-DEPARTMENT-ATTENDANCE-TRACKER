@@ -684,15 +684,47 @@ function Students({ state, updateState }) {
 
 function Events({ state, updateState, selectedEventId, setSelectedEventId }) {
   const today = new Date().toISOString().slice(0, 10);
-  const [form, setForm] = useState({ title: '', date: today, venue: '', organizer: 'Business Ed Department', description: '' });
+  const blankEventForm = { title: '', date: today, venue: '', organizer: 'Business Ed Department', description: '' };
+  const [form, setForm] = useState(blankEventForm);
+  const [editingEventId, setEditingEventId] = useState('');
 
-  function addEvent(event) {
+  function submitEvent(event) {
     event.preventDefault();
     if (!form.title.trim() || !form.date || !form.venue.trim()) return;
+
+    if (editingEventId) {
+      updateState({
+        events: state.events.map((item) =>
+          item.id === editingEventId ? { ...item, ...form } : item
+        ),
+      });
+      setSelectedEventId(editingEventId);
+      setEditingEventId('');
+      setForm(blankEventForm);
+      return;
+    }
+
     const nextEvent = { id: `EVT-${Date.now().toString().slice(-5)}`, ...form };
     updateState({ events: [nextEvent, ...state.events] });
     setSelectedEventId(nextEvent.id);
-    setForm({ title: '', date: today, venue: '', organizer: 'Business Ed Department', description: '' });
+    setForm(blankEventForm);
+  }
+
+  function editEvent(item) {
+    setEditingEventId(item.id);
+    setForm({
+      title: item.title || '',
+      date: item.date || today,
+      venue: item.venue || '',
+      organizer: item.organizer || 'Business Ed Department',
+      description: item.description || '',
+    });
+    setSelectedEventId(item.id);
+  }
+
+  function cancelEdit() {
+    setEditingEventId('');
+    setForm(blankEventForm);
   }
 
   function deleteEvent(id) {
@@ -704,14 +736,17 @@ function Events({ state, updateState, selectedEventId, setSelectedEventId }) {
     if (selectedEventId === id) {
       setSelectedEventId(remainingEvents[0]?.id || '');
     }
+    if (editingEventId === id) {
+      cancelEdit();
+    }
   }
 
   return (
     <div className="view-stack">
       <SectionHeader title="Activities & Events" subtitle="Create department activities, assemblies, seminars, and workshops for attendance monitoring." />
       <div className="content-grid">
-        <form className="panel form-panel" onSubmit={addEvent}>
-          <PanelTitle title="Add Event" action="Activity setup" />
+        <form className="panel form-panel" onSubmit={submitEvent}>
+          <PanelTitle title={editingEventId ? 'Edit Event' : 'Add Event'} action={editingEventId ? 'Update details' : 'Activity setup'} />
           <input placeholder="Event or activity title" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} />
           <div className="form-row">
             <input type="date" value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value })} />
@@ -719,7 +754,8 @@ function Events({ state, updateState, selectedEventId, setSelectedEventId }) {
           </div>
           <input placeholder="Organizer" value={form.organizer} onChange={(event) => setForm({ ...form, organizer: event.target.value })} />
           <input placeholder="Short description" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} />
-          <button className="primary-button" type="submit">Add event</button>
+          <button className="primary-button" type="submit">{editingEventId ? 'Save changes' : 'Add event'}</button>
+          {editingEventId && <button className="ghost-button" type="button" onClick={cancelEdit}>Cancel edit</button>}
         </form>
         <section className="class-grid">
           {state.events.map((item) => {
@@ -735,6 +771,7 @@ function Events({ state, updateState, selectedEventId, setSelectedEventId }) {
                 </dl>
                 <div className="card-actions">
                   <button className="ghost-button" onClick={() => setSelectedEventId(item.id)}>Use event</button>
+                  <button className="ghost-button" onClick={() => editEvent(item)}>Edit</button>
                   <button className="ghost-button danger" onClick={() => deleteEvent(item.id)}>Delete</button>
                 </div>
               </article>
