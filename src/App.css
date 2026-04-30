@@ -75,17 +75,6 @@ button {
   font-weight: 800;
 }
 
-.credential-hint {
-  padding: 12px;
-  border-radius: 8px;
-  color: var(--dark-green);
-  background: #dff1e6;
-}
-
-.credential-hint p {
-  margin: 4px 0 0;
-}
-
 .app-shell {
   min-height: 100vh;
   display: grid;

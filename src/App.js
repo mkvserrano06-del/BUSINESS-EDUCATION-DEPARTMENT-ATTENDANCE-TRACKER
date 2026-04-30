@@ -366,14 +366,6 @@ function LoginScreen({ adminAccount, officerAccounts, onLogin }) {
           {error && <p className="login-error">{error}</p>}
           <button className="primary-button" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Logging in...' : 'Log in'}</button>
         </form>
-        <div className="credential-hint">
-          <strong>Demo accounts</strong>
-          <p>Supabase Admin: admin@example.com / admin123</p>
-          <p>Supabase Officer: officer@example.com / officer123</p>
-          <p>Admin: {(adminAccount || defaultAdminAccount).username} / current Admin password</p>
-          <p>Student Officer: officer / officer123</p>
-          <p>Admin may add more Student Officer accounts in Settings.</p>
-        </div>
       </section>
     </main>
   );
