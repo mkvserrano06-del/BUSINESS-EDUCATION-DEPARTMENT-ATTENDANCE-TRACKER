@@ -99,7 +99,21 @@ function migrateState(savedState) {
 
 function loadState() {
   if (canUseLiveState()) {
-    return createEmptyLiveState();
+    const liveState = createEmptyLiveState();
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const savedState = migrateState(JSON.parse(saved));
+        return {
+          ...liveState,
+          adminAccount: savedState.adminAccount || liveState.adminAccount,
+          officerAccounts: savedState.officerAccounts || liveState.officerAccounts,
+        };
+      }
+    } catch (error) {
+      console.warn('Unable to load saved account settings', error);
+    }
+    return liveState;
   }
 
   try {
@@ -212,6 +226,8 @@ function App() {
         events: state.events,
         logs: state.logs,
         notices: state.notices,
+        adminAccount: state.adminAccount,
+        officerAccounts: state.officerAccounts,
       };
       const serialized = JSON.stringify(livePayload);
 

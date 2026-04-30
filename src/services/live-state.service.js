@@ -12,6 +12,8 @@ export function stripPrivateState(state) {
     events: state.events || [],
     logs: state.logs || [],
     notices: state.notices || [],
+    adminAccount: state.adminAccount || null,
+    officerAccounts: state.officerAccounts || [],
   };
 }
 
@@ -21,6 +23,8 @@ export function normalizeLiveState(liveState = {}) {
     events: Array.isArray(liveState.events) ? liveState.events : [],
     logs: Array.isArray(liveState.logs) ? liveState.logs : [],
     notices: Array.isArray(liveState.notices) ? liveState.notices : [],
+    adminAccount: liveState.adminAccount || null,
+    officerAccounts: Array.isArray(liveState.officerAccounts) ? liveState.officerAccounts : null,
   };
 }
 
@@ -33,6 +37,8 @@ export function mergeLiveState(localState, liveState) {
     events: normalized.events,
     logs: normalized.logs,
     notices: normalized.notices,
+    adminAccount: normalized.adminAccount || localState.adminAccount,
+    officerAccounts: normalized.officerAccounts || localState.officerAccounts,
   };
 }
 
